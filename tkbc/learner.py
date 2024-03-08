@@ -5,6 +5,7 @@ from typing import Dict
 import logging
 import torch
 from torch import optim
+import os
 
 from datasets import TemporalDataset
 from optimizers import TKBCOptimizer, IKBCOptimizer
@@ -60,6 +61,24 @@ parser.add_argument(
 
 
 args = parser.parse_args()
+
+root = 'results/'+ args.dataset +'/' + args.model
+modelname = args.model
+datasetname = args.dataset
+
+##restore model parameters and results
+PATH=os.path.join(root,'rank{:.0f}/lr{:.4f}/batch{:.0f}/emb_reg{:.5f}/time_reg{:.5f}/'.format(args.rank,args.learning_rate,args.batch_size, args.emb_reg, args.time_reg))
+
+# Results related
+try:
+    os.makedirs(PATH)
+except FileExistsError:
+    pass
+#os.makedirs(PATH)
+patience = 0
+mrr_std = 0
+
+curve = {'train': [], 'valid': [], 'test': []}
 
 dataset = TemporalDataset(args.dataset)
 
@@ -127,4 +146,36 @@ for epoch in range(args.max_epochs):
             print("valid: ", valid['MRR'])
             print("test: ", test['MRR'])
             print("train: ", train['MRR'])
+        # Save results
 
+        f = open(os.path.join(PATH, 'result.txt'), 'w+')
+        f.write("\n VALID: ")
+        f.write(str(valid))
+        f.close()
+        # early-stop with patience
+        mrr_valid = valid['MRR']
+        if mrr_valid < mrr_std:
+            patience += 1
+            if patience >= 10:
+                print("Early stopping ...")
+                break
+        else:
+            patience = 0
+            mrr_std = mrr_valid
+            torch.save(model.state_dict(), os.path.join(PATH, modelname+'.pkl'))
+
+        curve['valid'].append(valid)
+        # curve['test'].append(test)
+        if not dataset.has_intervals():
+            curve['train'].append(train)
+
+            print("\t TRAIN: ", train)
+        print("\t VALID : ", valid)
+        print("\t TEST : ", test)
+model.load_state_dict(torch.load(os.path.join(PATH, modelname+'.pkl')))
+results = avg_both(*dataset.eval(model, 'test', -1))
+print("\n\nTEST : ", results)
+f = open(os.path.join(PATH, 'result.txt'), 'w+')
+f.write("\n\nTEST : ")
+f.write(str(results))
+f.close()

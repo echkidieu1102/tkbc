@@ -2,11 +2,12 @@
 This code reproduces results in [Tensor Decompositions for Temporal Knowledge Base Completion](https://arxiv.org/abs/2004.04926) (ICLR 2020).
 
 ## Installation
-Create a conda environment with pytorch and scikit-learn :
+Create a conda environment with pytorch(check version: [Pytorch](https://pytorch.org/get-started/locally/)) and scikit-learn :
 ```
-conda create --name tkbc_env python=3.7
+conda create --name tkbc_env python=3.11
 source activate tkbc_env
-conda install --file requirements.txt -c pytorch
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+conda install --file requirements.txt
 ```
 
 Then install the kbc package to this environment
@@ -19,7 +20,7 @@ python setup.py install
 To download the datasets, go to the tkbc/scripts folder and run:
 ```
 chmod +x download_data.sh
-./download_data.sh
+bash ./download_data.sh
 ```
 
 Once the datasets are downloaded, add them to the package data folder by running :

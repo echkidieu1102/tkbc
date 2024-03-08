@@ -1,0 +1,44 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: ${workspaceFolder}",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+
+            // ICEWS14
+            "args": [
+                "--dataset=ICEWS14",
+                "--model=TNTComplEx",
+                "--rank=2000",
+                "--emb_reg=1e-2",
+                "--time_reg=1e-2"
+            ]
+            
+            // // ICEWS05-15
+            // "args": [
+            //     "--dataset=ICEWS05-15",
+            //     "--model=TNTComplEx",
+            //     "--rank=128",
+            //     "--emb_reg=1e-3",
+            //     "--time_reg=1"
+            // ]
+
+            // // yago15k
+            // "args": [
+            //     "--dataset=yago15k",
+            //     "--model=TNTComplEx",
+            //     "--rank=189",
+            //     "--no_time_emb",
+            //     "--emb_reg=1e-2",
+            //     "--time_reg=1"
+            // ]
+        }
+    ]
+}
